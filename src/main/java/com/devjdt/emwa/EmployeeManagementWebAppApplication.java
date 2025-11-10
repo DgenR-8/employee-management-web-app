@@ -21,14 +21,21 @@ public class EmployeeManagementWebAppApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		
-		Employee employee1 = new Employee("Eli", "Tabios", "elitabios@gmail.com");
+		Employee employee1 = new Employee("Eli", "Tabios", "eli@gmail.com");
 		employeeRepository.save(employee1);
 		
-		Employee employee2 = new Employee("Sam", "Winchester", "samwinchester@gmail.com");
+		Employee employee2 = new Employee("Sam", "Winchester", "samw@gmail.com");
 		employeeRepository.save(employee2);
 		
-		Employee employee3 = new Employee("Dean", "Winchester", "deanwinchester@gmail.com");
+		Employee employee3 = new Employee("Dean", "Winchester", "dean@gmail.com");
 		employeeRepository.save(employee3);
+
+		Employee employee4 = new Employee("Rick", "Sanchez", "rick@gmail.com");
+		employeeRepository.save(employee4);
+		
+		Employee employee5 = new Employee("Solid", "Snake", "solid@gmail.com");
+		employeeRepository.save(employee5);
+
 	}
 
 }
