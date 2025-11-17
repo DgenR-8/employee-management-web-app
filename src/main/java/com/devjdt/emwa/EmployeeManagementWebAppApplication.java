@@ -30,6 +30,12 @@ public class EmployeeManagementWebAppApplication implements CommandLineRunner{
 		Employee employee3 = new Employee("Dean", "Winchester", "dean@gmail.com");
 		employeeRepository.save(employee3);
 
+		Employee employee4 = new Employee("Baki", "Winchester", "bakihanma1@yahoo.com");
+		employeeRepository.save(employee4);
+
+		Employee employee5 = new Employee("Sober", "Human", "sober@yahoo.com");
+		employeeRepository.save(employee5);
+
 	}
 
 }
