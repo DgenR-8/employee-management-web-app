@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 <meta charset="ISO-8859-1">
 <title>Employee Management System</title>
@@ -65,6 +66,15 @@
 		font-weight: 600;
 		color: var(--dark-color);
 		margin: 0;
+	}
+
+	footer {
+		background-color: var(--dark-color);
+		color: white;
+		padding: 1.5rem 0;
+		text-align: center;
+		margin-top: auto;
+		border-top: none;
 	}
 	
 	.btn-primary {
@@ -138,66 +148,30 @@
 		padding: 0.4rem 0.8rem;
 	}
 	
-	.card {
-		border: none;
+	.user-info {
+		background-color: #e9ecef;
+		padding: 0.5rem 1rem;
 		border-radius: var(--border-radius);
-		box-shadow: var(--box-shadow);
-		transition: var(--transition);
+		font-size: 0.9rem;
+		margin-left: 1rem;
 	}
 	
-	.card:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-	}
-	
-	.card-header {
-		background-color: var(--primary-color);
+	.admin-badge {
+		background-color: var(--danger-color);
 		color: white;
-		border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
-		padding: 1rem 1.5rem;
-		border: none;
+		padding: 0.2rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		margin-left: 0.5rem;
 	}
 	
-	.card-body {
-		padding: 2rem;
-	}
-	
-	.form-label {
-		font-weight: 500;
-		margin-bottom: 0.5rem;
-		color: #555;
-	}
-	
-	.form-control {
-		border-radius: var(--border-radius);
-		padding: 0.75rem;
-		border: 1px solid #ddd;
-		transition: var(--transition);
-	}
-	
-	.form-control:focus {
-		border-color: var(--accent-color);
-		box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-	}
-	
-	.empty-state {
-		text-align: center;
-		padding: 3rem;
-		color: #6c757d;
-	}
-	
-	.empty-state i {
-		font-size: 4rem;
-		margin-bottom: 1rem;
-		color: #dee2e6;
-	}
-	
-	footer {
-		background-color: var(--dark-color);
+	.user-badge {
+		background-color: var(--success-color);
 		color: white;
-		padding: 1.5rem 0;
-		text-align: center;
-		margin-top: auto;
+		padding: 0.2rem 0.5rem;
+		border-radius: 4px;
+		font-size: 0.8rem;
+		margin-left: 0.5rem;
 	}
 	
 	@media (max-width: 768px) {
@@ -213,6 +187,11 @@
 		.action-buttons {
 			flex-direction: column;
 		}
+		
+		.user-info {
+			margin-left: 0;
+			margin-top: 0.5rem;
+		}
 	}
 </style>
 </head>
@@ -220,7 +199,7 @@
 	
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" th:href="@{/employees}">
                 <i class="fas fa-users"></i>Employee Management System
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -233,56 +212,97 @@
 							<i class="fas fa-list me-1"></i>Employees
 						</a>
                     </li>
+                    <li class="nav-item">
+                        <div class="user-info">
+                            <i class="fas fa-user me-1"></i>
+                            <span sec:authentication="name"></span>
+                            <span sec:authorize="hasRole('ADMIN')" class="admin-badge">ADMIN</span>
+                            <span sec:authorize="hasRole('USER')" class="user-badge">USER</span>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-outline-light btn-sm ms-2">
+                                <i class="fas fa-sign-out-alt me-1"></i>Logout
+                            </button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-	<div class = "main-content">
-		<div class ="container">
-
+	<div class="main-content">
+		<div class="container">
 			<div class="page-header">
                 <h1 class="page-title">
                     <i class="fas fa-user-tie me-2"></i>Employee Directory
                 </h1>
-                <button onclick="window.location.href='/employees/new'" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Add Employee
-                </button>
+                <!-- Only show Add Employee button to ADMIN -->
+                <div sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/employees/new}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add Employee
+                    </a>
+                </div>
             </div>
-			<div class = "table-container">
-				<table class = "table table-hover thead-dark mb-0">
-					<thead class = "table-dark">
+			
+			<div class="table-container">
+				<table class="table table-hover thead-dark mb-0">
+					<thead class="table-dark">
 						<tr>
-							<th> Employee First Name</th>
-							<th> Employee Last Name</th>
-							<th> Employee Email</th>
-							<th> Actions</th>
+							<th>ID</th>
+							<th>First Name</th>
+							<th>Last Name</th>
+							<th>Email</th>
+							<th>Actions</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:each="employee : ${employees}">
-							<td th:text = "${employee.firstName}"></td>
-							<td th:text = "${employee.lastName}"></td>
-							<td th:text = "${employee.email}"></td>
+							<td th:text="${employee.id}"></td>
+							<td th:text="${employee.firstName}"></td>
+							<td th:text="${employee.lastName}"></td>
+							<td th:text="${employee.email}"></td>
 							<td>
-								<a th:href = "@{/employees/edit/{id}(id=${employee.id})}"
-								class = "btn btn-primary"> Update </a>
-								
-								<a th:href = "@{/employees/{id}(id=${employee.id})}"
-								class = "btn btn-danger"> Delete </a>
+								<div class="action-buttons">
+									<!-- Only show Update button to ADMIN -->
+									<div sec:authorize="hasRole('ADMIN')">
+										<a th:href="@{/employees/edit/{id}(id=${employee.id})}" class="btn btn-primary">
+											<i class="fas fa-edit me-1"></i>Update
+										</a>
+									</div>
+									<!-- Only show Delete button to ADMIN -->
+									<div sec:authorize="hasRole('ADMIN')">
+										<a th:href="@{/employees/delete/{id}(id=${employee.id})}" class="btn btn-danger" 
+										   onclick="return confirm('Are you sure you want to delete this employee?')">
+											<i class="fas fa-trash me-1"></i>Delete
+										</a>
+									</div>
+									<!-- Show message for regular users -->
+									<div sec:authorize="hasRole('USER')">
+										<span class="text-muted">View only</span>
+									</div>
+								</div>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
+			
+			<!-- Information card for regular users -->
+			<div sec:authorize="hasRole('USER')" class="alert alert-info">
+				<h5><i class="fas fa-info-circle me-2"></i>Information</h5>
+				<p class="mb-0">You are viewing the employee directory in read-only mode. Only administrators can add, edit, or delete employees.</p>
+			</div>
 		</div>
 	</div>
 
     <footer>
-        <div class="container">
-            <p class="mb-0">&copy; 2025 Employee Management System. All rights reserved.</p>
-        </div>
-    </footer>
-	
+		<div class="container">
+			<p class="mb-0">&copy; 2025 Employee Management System. All rights reserved.</p>
+		</div>
+	</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -8,6 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.devjdt.emwa.entity.Employee;
 import com.devjdt.emwa.repository.EmployeeRepository;
 
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+@EnableMethodSecurity(prePostEnabled = true)
+
 @SpringBootApplication
 public class EmployeeManagementWebAppApplication implements CommandLineRunner{
 
@@ -30,9 +33,9 @@ public class EmployeeManagementWebAppApplication implements CommandLineRunner{
 		Employee employee3 = new Employee("Dean", "Winchester", "dean@gmail.com");
 		employeeRepository.save(employee3);
 
-		Employee employee4 = new Employee("Baki", "Winchester", "bakihanma1@yahoo.com");
+		Employee employee4 = new Employee("Baki", "Hanma", "bakihanma1@yahoo.com");
 		employeeRepository.save(employee4);
-
+		
 		Employee employee5 = new Employee("Sober", "Human", "sober@yahoo.com");
 		employeeRepository.save(employee5);
 
